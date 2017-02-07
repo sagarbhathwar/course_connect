@@ -10,3 +10,11 @@ class IndexView(generic.ListView):
 
     def get_queryset(self):
         return Course.objects.order_by('-start_date')
+
+
+class CoursesView(generic.ListView):
+    template_name = 'course_connect/courses.html'
+    context_object_name = 'courses'
+
+    def get_queryset(self):
+        return Course.objects.all()

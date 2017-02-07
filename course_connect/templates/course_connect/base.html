@@ -18,12 +18,21 @@
     <body>
         <nav class="navbar navbar-default">
             <div class="container-fluid">
-                <div class="navbar-header">
+                <div class="navbar-header" item-height="100%">
                 <a href="{% url 'course_connect:index' %}"> 
-                    <img class="pull-left"  src="{% static 'img/pesit-logo.png' %}" height="50px"/>
+                    <img src="{% static 'img/pesit-logo.png' %}" height="50vh"/>
                 </a>
                 <a class="navbar-brand" href="{% url 'course_connect:index' %}">Course Connect</a>
                 </div>
+                <ul class="nav navbar-nav">
+                    <li id="home"><a href="{% url 'course_connect:index' %}">Home</a></li>
+                    <li id="all_courses"><a href="{% url 'course_connect:courses' %}">All courses</a></li>
+                    <li id="about"><a href="{% url 'course_connect:about' %}">About</a></li>
+                    <li id="contact"><a href="{% url 'course_connect:contact' %}">Contact</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li id="login"><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+                </ul>
                 {% block body_top %}
                 <!-- page respective customized elements here -->
                 {% endblock body_top %}
