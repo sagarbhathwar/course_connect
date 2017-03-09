@@ -10,4 +10,36 @@
 {% endblock headblock %}
 
 {% block body_top %}
+
+    	<div class="homepage-slider">
+        	<div id="sequence">
+				<ul class="sequence-canvas">
+					<li class="bg1">
+						<h1 class="title">Course Connect</h1>
+						<h2 class="subtitle">Take best online courses here</h2>
+						<img class="slide-img" src="{% static 'img//mrd.jpg' %}" alt="Slide 1" />
+					</li>
+
+					<li class="bg2">
+						<h1 class="title">PES University</h1>
+						<h2 class="subtitle">Department of Computer Science and Engineering</h2>
+						<img class="slide-img" src="{% static 'img/techpark.jpg' %}" alt="Slide 2" />
+					</li>
+
+					<li class="bg3">
+						<h1 class="title">PES - University</h1>
+						<h2 class="subtitle">Online Programming Courses.</h2>
+						<img class="slide-img" src="{% static 'img//mech.jpg' %}" alt="Slide 3" />
+					</li>
+
+				</ul>
+				<div class="sequence-pagination-wrapper">
+					<ul class="sequence-pagination">
+						<li>1</li>
+						<li>2</li>
+						<li>3</li>
+					</ul>
+				</div>
+			</div>
+        </div>
 {% endblock body_top %}
