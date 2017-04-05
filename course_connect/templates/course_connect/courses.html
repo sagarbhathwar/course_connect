@@ -1,13 +1,85 @@
 {% extends 'course_connect/base.html' %}
 {% load static %}
+
 {% block headblock %}
-    <script type="text/javascript">
-        $(document).ready(function()
-        {
-            $("#all_courses").addClass("active");
-        });
-    </script>
+<link rel="stylesheet" href="{% static '/js/codemirror/lib/codemirror.css' %}">
+<style>
+    .CodeMirror { border: 1px solid #ddd; margin-right: 35%;}
+</style>
 {% endblock headblock %}
 
 {% block body_top %}
+    <div class="container-fluid">
+    <div class="row">
+    <div class="col-md-2 sidebar">
+        <ul class="nav nav-sidebar navbar-default">
+        <!-- TODO at a later stage
+        Fill out content for these pages
+        -->
+        <li class="active"><a href="#">Overview</a></li>
+        <li><a href="#">Syllabus</a></li>
+        <li><a href="#">Programming Exercises</a></li>
+        <li><a href="#">Quiz</a></li>
+        <li><a href="#">Remarks</a></li>
+        <li><a href="#">Feedback</a></li>
+        </ul>
+    </div>
+    <div style="overflow: hidden;">
+    <form action="{% url 'course_connect:check' %}" method="POST">
+        {% csrf_token %}
+
+    <label for="sourcecode">Source Code:</label>
+    <textarea id="sourcecode" class="form-control" style="display: none;"></textarea>
+    <input type="submit" class="btn btn-primary" style="margin-top: 2px" value="Submit Code">
+    </form>
+    </div>
+    <div id="lintinfo">
+        <!-- >>>TODO 
+            Linter output goes here 
+            Try placing this div right beside the code editor
+            Also, try modifying the left sidebar to look a little uniform like the
+            top navbar
+        -->
+    </div>
+    </div>
+    </div>
+
 {% endblock body_top %}
+
+{% block script_block %}
+    <script src="{% static '/js/codemirror/lib/codemirror.js' %}"></script>
+    <script src="{% static '/js/codemirror/mode/javascript/javascript.js' %}"></script>
+    <script src="{% static '/js/codemirror/addon/edit/matchbrackets.js' %}"></script>
+    <script type="text/javascript">
+        
+        function checkCode()
+        {
+            // Submission throttling
+            $.ajax(
+            {
+                url: "{% url 'course_connect:lint' %}",
+                method: "POST",
+                success : linterOutput,
+                data: {'code': $("#sourcecode").val(), 'lang': 'python'},
+                headers : {"X-CSRFToken": Cookies.get("csrftoken")}
+            });
+        }
+
+        function linterOutput(data, status, jqXHR)
+        {
+            /* >>>TODO: Create some div which shows the output of pylinter */
+        }
+
+        $(document).ready(function()
+        {
+            $("#all_courses").addClass("active");
+
+            var codeMirror = CodeMirror.fromTextArea($("#sourcecode")[0], 
+            {lineWrapping: true, lineNumbers: true, mode: "text/html", matchBrackets: true,
+            border: '1px'});
+            
+            setTimeout(checkCode, 10000);
+        });
+
+    </script>
+{% endblock script_block %}

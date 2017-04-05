@@ -8,19 +8,12 @@
         
         <link rel="stylesheet" href="{% static '/css/bootstrap/css/bootstrap.css' %}">
         <link rel="stylesheet" href="{% static '/css/bootstrap/css/bootstrap-theme.css' %}">
-        <link rel="stylesheet" href="{% static 'main.css' %}">
+	    <link rel="stylesheet" href="{% static '/css/styles.css' %}">
 
-        <script src="{% static '/js/jquery/jquery-3.1.1.js' %}"></script>
-        <script src="{% static '/js/jquery/bxslider/jquery.bxslider.js' %}"></script>
-        <script src="{% static '/css/bootstrap/js/bootstrap.min.js' %}"></script>
-        <script src="{% static '/tjs/jquery.fitvids.js' %}"></script>
-        <script src="{% static '/tjs/jquery.sequence-min.js' %}"></script>
-        <script src="{% static '/tjs/main-menu.js' %}"></script>
-        <script src="{% static '/tjs/template.js' %}"></script>
-        <script src="{% static '/tjs/jquery.bxslider.js' %}"></script>
-            {% block headblock %}
-            <!-- other scrips go here -->
-            {% endblock headblock %}
+        {% block headblock %}
+
+        {% endblock headblock %}
+
     </head>
 
     <body>
@@ -46,5 +39,15 @@
         {% block body_top %}
         <!-- page respective customized elements here -->
         {% endblock body_top %}
+
+        
+
+        <script src="{% static '/js/jquery/jquery-3.1.1.js' %}"></script>
+        <script src="{% static '/css/bootstrap/js/bootstrap.min.js' %}"></script>
+        <script src="{% static '/js/js.cookie-2.1.4.min.js' %}"></script>
+
+        {% block script_block %}
+        <!-- Scripts come here -->
+        {% endblock script_block %}
     </body>
 </html>

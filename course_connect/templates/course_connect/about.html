@@ -1,13 +1,14 @@
 {% extends 'course_connect/base.html' %}
 {% load static %}
-{% block headblock %}
+
+{% block body_top %}
+{% endblock body_top %}
+
+{% block script_block %}
     <script type="text/javascript">
         $(document).ready(function()
         {
             $("#about").addClass("active");
         });
     </script>
-{% endblock headblock %}
-
-{% block body_top %}
-{% endblock body_top %}
+{% endblock script_block %}
