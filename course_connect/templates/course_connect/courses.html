@@ -40,6 +40,7 @@
             Also, try modifying the left sidebar to look a little uniform like the
             top navbar
         -->
+        <pre id="linterop"></pre>
     </div>
     </div>
     </div>
@@ -52,7 +53,7 @@
     <script src="{% static '/js/codemirror/addon/edit/matchbrackets.js' %}"></script>
     <script type="text/javascript">
         
-        function checkCode()
+        function checkCode(text)
         {
             // Submission throttling
             $.ajax(
@@ -60,7 +61,7 @@
                 url: "{% url 'course_connect:lint' %}",
                 method: "POST",
                 success : linterOutput,
-                data: {'code': $("#sourcecode").val(), 'lang': 'python'},
+                data: {'code': text.getValue(), 'lang': 'python'},
                 headers : {"X-CSRFToken": Cookies.get("csrftoken")}
             });
         }
@@ -68,17 +69,24 @@
         function linterOutput(data, status, jqXHR)
         {
             /* >>>TODO: Create some div which shows the output of pylinter */
+            $("#linterop").html(data);
         }
 
         $(document).ready(function()
         {
+            var timer = null;
+
             $("#all_courses").addClass("active");
 
             var codeMirror = CodeMirror.fromTextArea($("#sourcecode")[0], 
             {lineWrapping: true, lineNumbers: true, mode: "text/html", matchBrackets: true,
             border: '1px'});
-            
-            setTimeout(checkCode, 10000);
+
+            codeMirror.on('keyup', function()
+            {
+                if(timer) clearTimeout(timer);
+                timer = setTimeout(checkCode, 1000, codeMirror);
+            });
         });
 
     </script>

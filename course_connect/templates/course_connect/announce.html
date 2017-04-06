@@ -1,0 +1,21 @@
+{% extends 'course_connect/base.html' %}
+{% load static %}
+
+{% block body_top %}
+<form method="GET" action="{% url 'course_connect:announce' %}">
+    Title<br><input name="title" id="title"><br>
+    Announcement<br><textarea name="text" id="text"></textarea><br>
+    Author<br><input name="author"><br><br>
+    <input type="submit" value="Announce!">
+</form>
+{% endblock body_top %}
+
+{% block script_block %}
+    <script type="text/javascript">
+        $(document).ready(function()
+        {
+            $("#announce").addClass("active");
+        });
+    </script>
+{% endblock script_block %}
+

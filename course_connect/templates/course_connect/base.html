@@ -3,12 +3,11 @@
 <html>
     <head>
         <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <title>Course Connect</title>
         
         <link rel="stylesheet" href="{% static '/css/bootstrap/css/bootstrap.css' %}">
         <link rel="stylesheet" href="{% static '/css/bootstrap/css/bootstrap-theme.css' %}">
-	    <link rel="stylesheet" href="{% static '/css/styles.css' %}">
 
         {% block headblock %}
 
@@ -30,6 +29,8 @@
                     <li id="all_courses"><a href="{% url 'course_connect:courses' %}">All courses</a></li>
                     <li id="about"><a href="{% url 'course_connect:about' %}">About</a></li>
                     <li id="contact"><a href="{% url 'course_connect:contact' %}">Contact</a></li>
+                    <li id="announce"><a href="{% url 'course_connect:announce_something' %}">Announce</a></li>
+                    <li id="announcement"><a href="#">Announcement</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li id="login"><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
@@ -39,8 +40,6 @@
         {% block body_top %}
         <!-- page respective customized elements here -->
         {% endblock body_top %}
-
-        
 
         <script src="{% static '/js/jquery/jquery-3.1.1.js' %}"></script>
         <script src="{% static '/css/bootstrap/js/bootstrap.min.js' %}"></script>

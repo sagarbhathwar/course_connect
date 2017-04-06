@@ -4,7 +4,12 @@
 {% block headblock %}
         
 
-	<link rel="stylesheet" href="{% static '/js/bxslider/css/jquery.bxslider.css' %}">
+<link rel="stylesheet" href="{% static '/js/bxslider/css/jquery.bxslider.css' %}">
+<style>
+	.col-md-4 {
+		text-align: center;
+	}
+</style>
 {% endblock headblock %}
 
 {% block body_top %}
@@ -19,7 +24,19 @@
 		<!-- Announcements using EventSource to get Data from server
 			about newest announcements as the user is online on the website
 		-->
-		<div class="">
+		<div class="container-fluid">
+		<div class="row">
+		<div id="announcements" class="col-md-4 well">
+			<h2> Announcements </h2>
+		</div>
+		<div class="col-md-4">
+			<h2> Programming Courses </h2>
+		</div>
+		<div class="col-md-4 well">
+			<h2> Recent Submissions </h2>
+		</div>
+		
+		</div>
 		</div>
 
 {% endblock body_top %}
@@ -29,10 +46,69 @@
 {% block script_block %}
     <script src="{% static '/js/bxslider/js/jquery.bxslider.js' %}"></script>
 	<script>
+
+		var timestamp = null;
+		function populateAnnouncements()
+		{
+			$.ajax(
+			{
+				method : "GET",
+
+				data: {'timestamp': timestamp},
+
+				url: "{% url 'course_connect:get_announcements' %}",
+				
+				success: function(data, str, jqXHR)
+				{
+					
+					var json = eval( '(' + data + ')' );
+					
+					var msgs = json['msgs'];
+					var msgid = json['msgid'];
+
+					for(var i = 0; i < msgs.length; ++i)
+					{
+						$("#announcements").append("<p><a href='http://127.0.0.1:8000/cc/announcement/"+ msgid[i] +"/'>" + msgs[i] + "</a></p>");
+					}
+					timestamp = json['timestamp'];
+					setTimeout(populateAnnouncements, 25000);
+				},
+
+				error: function()
+				{
+					setTimeout(populateAnnouncements, 25000);
+				}
+			})
+		}
+
+		function populateSubmissions()
+		{
+
+			$.ajax(
+			{
+				method : "GET",
+				url: "#", //dummy
+
+				success: function(data, str, jqXHR)
+				{
+
+					timestamp = json['timestamp'];
+					setTimeout(populateSubmissions, 10000);
+				},
+
+				error: function(jqXHR, status, err)
+				{
+					setTimeout(populateSubmissions, 10000);
+				}
+			})
+		}
+
 		$(document).ready(function()
 		{
 			$("#home").addClass("active");
 			$(".bxslider").bxSlider({infiniteLoop: true, auto: true});
+			populateAnnouncements();
+			//populateSubmissions();
 		});
 	</script>
 {% endblock script_block %}
