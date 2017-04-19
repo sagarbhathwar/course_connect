@@ -1,0 +1,52 @@
+{% extends 'course_connect/base.html' %}
+{% load static %}
+
+{% block headblock %}
+
+<style>
+    bd-example{
+        position:relative;
+        padding:1rem;margin:1rem -1rem;
+        border:solid #f7f7f9;
+        border-width:.2rem 0 0}
+</style>
+{% endblock headblock %}
+
+{% block body_top %}
+<div class="col-12 col-md-6 pull-md-3 bd-example">
+<form method="POST" action="{% url 'course_connect:question' %}" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="title">Title</label>
+        <input class="form-control" name="title" id="title" placeholder="Title">
+        <small class="form-text text-muted">This is the title of question</small>
+    </div>
+    <div class="form-group">
+        <label>Statement</label>
+        <textarea class="form-control" name="text" id="text" rows="15" placeholder="Problem Statement"></textarea>
+    </div>
+    <div>
+        <label>Author</label>
+        <input class="form-control" name="author" id="author" placeholder="Author">
+    </div>
+    <div>
+        <label>Semester</label>
+        <input class="form-control" name="semester" id="semester" type="number" min="3" max="7" placeholder="3">
+    </div>
+    <div>
+        <label>Test Cases Input File</label>
+        <input class="form-control-file" name="test" id="test" type="file">
+    </div><br>
+    <div>
+        <label>Test Case Solution File</label>
+        <input class="form-control-file" name="testSolution" id="testSolution" type="file">
+    </div><br>
+    <div>
+        <input class="btn btn-primary" type="submit" value="Upload Question!">
+    </div>
+</form>
+</div>
+{% endblock body_top %}
+
+{% block script_block %}
+{% endblock script_block %}

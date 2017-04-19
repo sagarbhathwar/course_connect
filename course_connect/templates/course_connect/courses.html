@@ -5,13 +5,16 @@
 <link rel="stylesheet" href="{% static '/js/codemirror/lib/codemirror.css' %}">
 <style>
     .CodeMirror { border: 1px solid #ddd; margin-right: 35%;}
+    button {
+        margin: 3px;
+    }
 </style>
 {% endblock headblock %}
 
 {% block body_top %}
     <div class="container-fluid">
     <div class="row">
-    <div class="col-md-2 sidebar">
+    <div class=" sidebar col-md-2 sidebar">
         <ul class="nav nav-sidebar navbar-default">
         <!-- TODO at a later stage
         Fill out content for these pages
@@ -24,23 +27,31 @@
         <li><a href="#">Feedback</a></li>
         </ul>
     </div>
+    <div class="col-md-10 pull-right">
+    <div>
+    <h4>{{question.question_title}}</h4>
+    </div>
+    <div id="question" name="question" style="overflow: hidden; margin-right: 35%;">
+        <h4> Problem Statement </h4>
+        {{question.question_statement}}
+        
+    </div>
+    <br><br>
+
     <div style="overflow: hidden;">
-    <form action="{% url 'course_connect:check' %}" method="POST">
+    <form action="{% url 'course_connect:lint' %}" method="POST" id="code">
         {% csrf_token %}
 
     <label for="sourcecode">Source Code:</label>
     <textarea id="sourcecode" class="form-control" style="display: none;"></textarea>
-    <input type="submit" class="btn btn-primary" style="margin-top: 2px" value="Submit Code">
+    <input type="hidden" name="lang" value="python" id="lang">
+    <input type="submit" class="btn btn-primary" style="margin-top: 2px; margin:2px;" value="Submit Code">
     </form>
     </div>
-    <div id="lintinfo">
-        <!-- >>>TODO 
-            Linter output goes here 
-            Try placing this div right beside the code editor
-            Also, try modifying the left sidebar to look a little uniform like the
-            top navbar
-        -->
+    <div id="lintinfo" style="display: none">
         <pre id="linterop"></pre>
+    </div>
+    <div id="buttons"></div>
     </div>
     </div>
     </div>
@@ -52,41 +63,112 @@
     <script src="{% static '/js/codemirror/mode/javascript/javascript.js' %}"></script>
     <script src="{% static '/js/codemirror/addon/edit/matchbrackets.js' %}"></script>
     <script type="text/javascript">
-        
-        function checkCode(text)
-        {
-            // Submission throttling
-            $.ajax(
-            {
-                url: "{% url 'course_connect:lint' %}",
-                method: "POST",
-                success : linterOutput,
-                data: {'code': text.getValue(), 'lang': 'python'},
-                headers : {"X-CSRFToken": Cookies.get("csrftoken")}
-            });
-        }
-
-        function linterOutput(data, status, jqXHR)
-        {
-            /* >>>TODO: Create some div which shows the output of pylinter */
-            $("#linterop").html(data);
-        }
 
         $(document).ready(function()
         {
-            var timer = null;
-
             $("#all_courses").addClass("active");
 
             var codeMirror = CodeMirror.fromTextArea($("#sourcecode")[0], 
-            {lineWrapping: true, lineNumbers: true, mode: "text/html", matchBrackets: true,
-            border: '1px'});
+            {lineWrapping: true, lineNumbers: true, mode: "text/html", 
+            matchBrackets: true, border: '1px'});
 
+            var timer = null;
             codeMirror.on('keyup', function()
             {
                 if(timer) clearTimeout(timer);
                 timer = setTimeout(checkCode, 1000, codeMirror);
             });
+
+        
+            function checkCode()
+            {
+                // Submission throttling
+                $("#lintinfo").css('display', 'block');
+                $.ajax(
+                {
+                    url: "{% url 'course_connect:lint' %}",
+                    method: "POST",
+                    success : function(data, status, jqXHR)
+                    {
+                        $("#linterop").html(data);   
+                    },
+                    data: {'code': codeMirror.getValue(), 'lang': 'python'},
+                    headers : {"X-CSRFToken": Cookies.get("csrftoken")},
+                });
+            }
+
+
+            $("#code").submit(function(e)
+            {
+                $("#lintinfo").remove();
+                e.preventDefault();
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', "{% url 'course_connect:submit' question.id %}");
+                xhr.setRequestHeader("X-CSRFToken", Cookies.get("csrftoken"));
+                xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                xhr.send('lang='+$("#lang").val()+'&code='+codeMirror.getValue() + '&qid='+{{question.id}});
+
+                var len = 0;
+                xhr.onreadystatechange = function()
+                {
+                    //Assumption: First, we recieve number of test cases, then on each echo we recieve whether the ith test case passed or not
+                    if(this.readyState == 3 && this.status == 200)
+                    {
+                        var text = this.responseText.slice(len);
+                        if(text.substr(0, 5) == "cases")
+                        {
+                            // Spawn few waiting symbols
+                            // Assume single digit number of test cases
+                            var numCases = parseInt(text.substr(6, 1));
+                            var div = $("#buttons")[0];
+                            for(var i = 0; i < numCases; ++i)
+                            {
+                                //populate divs with loading
+                                var btn = document.createElement("button");
+                                btn.id = "tcbtn" + (i + 1);
+                                btn.innerHTML = "Test case " + (i + 1);
+                                btn.className = "btn btn-info";
+                                div.appendChild(btn);
+                            }
+                            // This is for '1'
+                            var passCheck = parseInt(text.substr(7,3).split(":")[1]);
+                            if(passCheck == 0)
+                            {
+                                $("#tcbtn1").removeClass("btn btn-info");
+                                $("#tcbtn1").addClass("btn btn-danger");
+                            }
+
+                            else
+                            {
+                                $("#tcbtn1").removeClass("btn btn-info");
+                                $("#tcbtn1").addClass("btn btn-success");
+                            }
+                            len = this.responseText.length;
+                        }
+
+                        else
+                        {
+                            //Assumption: We have got "number:0/1" for question whether it passed the test. We accordingly change the red to blue
+                            var passCheck = text.split(":");
+                            var pass = parseInt(passCheck[1]);
+                            var testNo = "#tcbtn" + passCheck[0];
+                            $(testNo).removeClass("btn btn-info");
+                            if(pass == 1)
+                                $(testNo).addClass("btn btn-success");
+                            else
+                                $(testNo).addClass("btn btn-danger");
+                            len = this.responseText.length;
+                        }  
+                    }
+
+                    else if(this.readyState == 4 && this.status == 200)
+                    {
+                        
+                    }
+                }
+
+                return false;
+            })
         });
 
     </script>

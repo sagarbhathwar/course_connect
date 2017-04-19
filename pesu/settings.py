@@ -80,6 +80,7 @@ DATABASES = {
         'NAME': 'course_connect',
         'USER': 'course_connect_user',
         'PASSWORD': 'password',
+        'HOST' : 'localhost'
     }
 }
 
